@@ -27,30 +27,24 @@ $(function() {
          * 编写一个测试遍历 allFeeds 对象里面的所有的源来保证有名字字段而且不是空的。
          */
         it('names are defined', function() {
-            var FeedName = true;
             // 遍历元素，检查是否有包含无效名称的条目
             for (var i = 0, len = allFeeds.length; i < len; i++) {
-                if (!$.trim(allFeeds[i].name) && typeof allFeeds[i].name === 'string') {
-                    FeedName = false;
-                    break;
-                }
+                // name 必须存在且不为空
+                expect(!$.trim(allFeeds[i].name)).not.toBeTruthy();
+                // name 必须为字符串类型
+                expect(typeof allFeeds[i].name === 'string').toBeTruthy();
             }
-            expect(FeedName).toBe(true);
         });
 
         /* 
          * 编写一个测试遍历 allFeeds 对象里面的所有的源来保证有链接字段而且链接不是空的。
          */
         it('urls are defined', function() {
-            var FeedUrl = true;
             // 遍历元素，检查是否有包含无效链接地址的条目
             for (var i = 0, len = allFeeds.length; i < len; i++) {
-                if (!$.trim(allFeeds[i].url) && typeof allFeeds[i].url === 'string') {
-                    FeedUrl = false;
-                    break;
-                }
+                expect(!$.trim(allFeeds[i].url)).not.toBeTruthy();
+                expect(typeof allFeeds[i].url === 'string').toBeTruthy();
             }
-            expect(FeedUrl).toBe(true);
         });
 
     });
@@ -91,7 +85,7 @@ $(function() {
              */
         it('should be hidden', function() {
             // 当 body 含有 menu_hidden 且 菜单在屏幕可视区域外
-            expect(hasHiddenClass() && onMenuHidden()).toBe(true);
+            expect(hasHiddenClass() && onMenuHidden()).toBeTruthy();
         });
 
         /* 
@@ -105,11 +99,11 @@ $(function() {
             menuIcon.trigger('click');
             // 点击之后应该显示 ,因为 sideMenu 动画效果有200ms的执行时间 所以这里需要等待动画完成
             setTimeout(function() {
-                expect(!hasHiddenClass() && onMenuVisible()).toBe(true);
+                expect(!hasHiddenClass() && onMenuVisible()).toBeTruthy();
                 // 再次点击应该显示 
                 menuIcon.trigger('click');
                 setTimeout(function() {
-                    expect(hasHiddenClass() && onMenuHidden()).toBe(true);
+                    expect(hasHiddenClass() && onMenuHidden()).toBeTruthy();
                     done();
                 }, 250);
             }, 250);
@@ -138,7 +132,7 @@ $(function() {
             loadFeed(0, function() {
                 entries = feedContainer.find('.entry');
                 // 判断其是否包含 .entry 元素
-                expect(entries.length > 0).toBe(true);
+                expect(entries.length).toBeGreaterThan(0);
                 done();
             });
         });
@@ -151,6 +145,10 @@ $(function() {
         // 保存之前的内容，以便后续做比较
         beforeEach(function() {
             oldSource = $('.feed').find('.entry');
+            // 如果还没有内容加载进来，则临时添加一个
+            if(!oldSource.length){
+                oldSource = $('<article class="entry"> <h2></h2> <p></p> </article>').appendTo('.feed');
+            }
         });
 
         /*
@@ -161,7 +159,7 @@ $(function() {
             loadFeed(1, function() {
                 newSource = $('.feed').find('.entry');
                 // 对比旧内容的第一条 entry html是否和 新内容第一条entry相同，以判断其内容有没有更新
-                expect(newSource[0].outerHTML === oldSource[0].outerHTML).toBe(false);
+                expect(newSource[0].outerHTML).not.toEqual(oldSource[0].outerHTML);
                 done();
             });
         })
